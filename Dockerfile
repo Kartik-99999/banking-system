@@ -11,6 +11,7 @@ WORKDIR /app
 COPY --from=build /app/out ./out
 COPY lib ./lib
 COPY sql ./sql
+COPY web ./web
 COPY docker-entrypoint.sh mysql-lowmem.cnf ./
 RUN chmod +x docker-entrypoint.sh \
     && mkdir -p /etc/mysql/conf.d \
