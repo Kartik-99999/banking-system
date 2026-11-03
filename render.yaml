@@ -1,4 +1,4 @@
-# Render Blueprint: Java API + MySQL. Deploy via Dashboard → New → Blueprint.
+# Render Blueprint: all-in-one free web service (Java API + MySQL, one container).
 services:
   - type: web
     name: bank-api
@@ -6,38 +6,5 @@ services:
     dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /
-    envVars:
-      - key: DB_HOST
-        fromService:
-          name: bank-mysql
-          type: pserv
-          property: host
-      - key: DB_PORT
-        value: "3306"
-      - key: DB_NAME
-        value: bankdb
-      - key: DB_USER
-        value: root
-      - key: DB_PASSWORD
-        fromService:
-          name: bank-mysql
-          type: pserv
-          envVar: MYSQL_ROOT_PASSWORD
-
-  - type: pserv
-    name: bank-mysql
-    runtime: image
-    image:
-      url: mysql:8.0
-    plan: free
-    envVars:
-      - key: MYSQL_ROOT_PASSWORD
-        generateValue: true
-      - key: MYSQL_DATABASE
-        value: bankdb
-    # Free MySQL loses data when Render restarts it. For persistence,
-    # upgrade this service to Starter+ and uncomment:
-    # disk:
-    #   name: mysql-data
-    #   mountPath: /var/lib/mysql
-    #   sizeGB: 1
+    # NOTE: free plan has no persistent disk, so bank data resets whenever
+    # Render restarts, sleeps/wakes, or rebuilds this service. Fine for demo.

@@ -11,24 +11,21 @@ cd "/Users/kartikbhardwaj/IdeaProjects/Java Project"
 git add -A && git commit -m "Deploy-ready: CORS, env DB config, Dockerfile" && git push
 ```
 
-## Step 1 — Render (backend + MySQL)
+## Step 1 — Render (backend + MySQL, $0)
 
-1. Go to https://dashboard.render.com → **New → Blueprint** →
-   select the `banking-system` repo (it reads `render.yaml`) → **Apply**.
-2. Wait ~5–10 min for `bank-api` and `bank-mysql` to go live.
-   (First boot retries the DB connection for ~60s — that is normal.)
-3. Open the `bank-api` service → copy its URL, e.g.
-   `https://bank-api-xxxx.onrender.com`. Test it:
-   - `GET /` shows the UI, `GET /api/history` without login → 401.
-4. You can already use the app at the Render URL (same-origin mode).
+The API and MySQL run in ONE free web service (the free plan forbids a
+separate private-service MySQL). Already deployed via API; to redo from the
+dashboard: **New → Blueprint** → select `banking-system` → **Apply**.
+
+1. Wait ~5–10 min for `bank-api` to go live (first boot initializes MySQL).
+2. Open the service → copy its URL, e.g. `https://bank-api-xxxx.onrender.com`.
+3. You can already use the app at the Render URL (same-origin mode).
 
 Notes:
 - **Free tier spins down** after inactivity; the first request takes ~30–60s.
-- **Free MySQL loses data on restart.** For persistence, upgrade `bank-mysql`
-  to Starter, add a 1 GB disk at `/var/lib/mysql` (see commented block in
-  `render.yaml`), redeploy.
-- If deploy fails on the DB service, check its logs for the MySQL
-  password/host; env vars are auto-wired from the Blueprint.
+- **Data resets on restart.** Free plan has no disk; restarts, sleep/wake
+  cycles, and redeploys start with an empty bank. For persistence, upgrade
+  to Starter + disk.
 
 ## Step 2 — Vercel (frontend)
 
@@ -49,5 +46,5 @@ Notes:
 | Vercel page loads but login fails | `config.js` URL wrong / has trailing slash; Render service asleep (wait 60s, retry) |
 | CORS error in browser console | Update backend: this repo already sends `Access-Control-Allow-Origin: *`; redeploy `bank-api` |
 | Render `bank-api` crash loop | Check logs: usually DB not ready yet (retries 60s) or wrong `DB_*` vars |
-| Data gone after a while | Free MySQL restarted without a disk; add disk (paid) or re-register |
+| Data gone after a while | Free service restarted (no disk on free plan); re-register — expected |
 | `Address already in use` locally | Unrelated to deploy; stop local server or use another port |
