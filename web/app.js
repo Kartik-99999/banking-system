@@ -1,4 +1,5 @@
 const state = { token: null, adminToken: null, name: "", accountNo: "", type: "", mode: "deposit" };
+const API = (window.BANK_API_BASE || "").replace(/\/$/, ""); // "" locally, Render URL on Vercel
 
 const $ = (id) => document.getElementById(id);
 const views = ["loginView", "registerView", "adminLoginView", "dashView", "adminView", "detailsView"];
@@ -18,7 +19,7 @@ $("toast").addEventListener("click", () => { $("toast").className = "hidden"; })
 async function api(path, method = "GET", body = null, token = state.token) {
   const headers = { "Content-Type": "application/json" };
   if (token) headers["X-Token"] = token;
-  const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : null });
+  const res = await fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : null });
   const data = await res.json().catch(() => ({}));
   if (!res.ok || data.ok === false) throw new Error(data.error || ("Request failed (" + res.status + ")"));
   return data;

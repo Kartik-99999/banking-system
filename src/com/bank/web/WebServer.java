@@ -1,5 +1,6 @@
 package com.bank.web;
 
+import com.bank.dao.DbInit;
 import com.bank.exception.AuthenticationException;
 import com.bank.exception.BankException;
 import com.bank.model.Account;
@@ -48,6 +49,7 @@ public class WebServer {
 
     public WebServer(int port, Path webDir) throws IOException {
         this.webDir = webDir;
+        DbInit.ensureSchema();
         server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/api/", this::handleApi);
         server.createContext("/", this::handleStatic);
@@ -70,6 +72,15 @@ public class WebServer {
     // ---------------- API ----------------
 
     private void handleApi(HttpExchange ex) throws IOException {
+        if (ex.getRequestMethod().equals("OPTIONS")) {
+            // CORS preflight for the Vercel-hosted frontend.
+            ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            ex.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            ex.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, X-Token");
+            ex.sendResponseHeaders(204, -1);
+            ex.close();
+            return;
+        }
         try {
             String path = ex.getRequestURI().getPath();
             String method = ex.getRequestMethod();
@@ -302,6 +313,7 @@ public class WebServer {
     private void send(HttpExchange ex, int code, String json) throws IOException {
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         ex.getResponseHeaders().set("Content-Type", "application/json");
+        ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         ex.sendResponseHeaders(code, bytes.length);
         try (OutputStream os = ex.getResponseBody()) {
             os.write(bytes);
@@ -335,6 +347,7 @@ public class WebServer {
             }
             byte[] bytes = Files.readAllBytes(file);
             ex.getResponseHeaders().set("Content-Type", contentType);
+            ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
             ex.sendResponseHeaders(200, bytes.length);
             try (OutputStream os = ex.getResponseBody()) {
                 os.write(bytes);

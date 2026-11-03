@@ -71,6 +71,10 @@ GET /api/account /api/balance /api/history?limit=50 /api/admin/accounts.
 Register also logs you in and returns the full account details for the receipt page.
 Logged-in calls send the login token in the X-Token header.
 
+## Deploy
+
+Backend + MySQL on Render, static frontend on Vercel — see [DEPLOY.md](DEPLOY.md).
+
 ## Viva Q&A (short answers)
 
 - **Why `BigDecimal`, not `double`?** Exact decimal math; doubles round badly.

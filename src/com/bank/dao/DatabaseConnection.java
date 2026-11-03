@@ -17,14 +17,25 @@ public final class DatabaseConnection {
     private static String password = "";
 
     static {
-        try (InputStream in = new FileInputStream("db.properties")) {
-            Properties props = new Properties();
-            props.load(in);
-            url = props.getProperty("db.url", url);
-            user = props.getProperty("db.user", user);
-            password = props.getProperty("db.password", password);
-        } catch (Exception ignored) {
-            // No db.properties found: fall back to the defaults above.
+        String host = System.getenv("DB_HOST");
+        if (host != null && !host.isEmpty()) {
+            // Deployed mode (Render): config comes from environment variables.
+            String port = getenvOr("DB_PORT", "3306");
+            String name = getenvOr("DB_NAME", "bankdb");
+            url = "jdbc:mysql://" + host + ":" + port + "/" + name
+                    + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+            user = getenvOr("DB_USER", "root");
+            password = getenvOr("DB_PASSWORD", "");
+        } else {
+            try (InputStream in = new FileInputStream("db.properties")) {
+                Properties props = new Properties();
+                props.load(in);
+                url = props.getProperty("db.url", url);
+                user = props.getProperty("db.user", user);
+                password = props.getProperty("db.password", password);
+            } catch (Exception ignored) {
+                // No db.properties found: fall back to the defaults above.
+            }
         }
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -35,6 +46,11 @@ public final class DatabaseConnection {
     }
 
     private DatabaseConnection() {
+    }
+
+    private static String getenvOr(String key, String fallback) {
+        String value = System.getenv(key);
+        return (value == null || value.isEmpty()) ? fallback : value;
     }
 
     public static Connection getConnection() throws SQLException {
