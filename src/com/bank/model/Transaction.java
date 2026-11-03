@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 /** One row of the transaction history (mini statement). */
 public class Transaction {
     public enum Type {
-        DEPOSIT, WITHDRAW, TRANSFER_IN, TRANSFER_OUT, INTEREST
+        DEPOSIT, WITHDRAW, TRANSFER_IN, TRANSFER_OUT, INTEREST,
+        FD_OPEN, FD_CLOSE, LOAN_DISBURSE, LOAN_REPAY
     }
 
     private long txnId;

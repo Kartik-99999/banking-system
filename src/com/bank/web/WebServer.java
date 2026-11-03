@@ -5,6 +5,9 @@ import com.bank.exception.AuthenticationException;
 import com.bank.exception.BankException;
 import com.bank.model.Account;
 import com.bank.model.Customer;
+import com.bank.model.DebitCard;
+import com.bank.model.FixedDeposit;
+import com.bank.model.Loan;
 import com.bank.model.Transaction;
 import com.bank.service.BankService;
 import com.bank.util.ValidationUtil;
@@ -33,6 +36,7 @@ import java.util.concurrent.Executors;
  */
 public class WebServer {
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final long ADMIN = -1L;
     private static final String BANK_NAME = "Campus National Bank";
     private static final String BRANCH = "Main Branch, Gurugram";
@@ -106,6 +110,26 @@ public class WebServer {
                 doChangePin(ex);
             } else if (path.equals("/api/interest") && method.equals("POST")) {
                 doInterest(ex);
+            } else if (path.equals("/api/fd/create") && method.equals("POST")) {
+                doFdCreate(ex);
+            } else if (path.equals("/api/fd/list") && method.equals("GET")) {
+                doFdList(ex);
+            } else if (path.equals("/api/fd/close") && method.equals("POST")) {
+                doFdClose(ex);
+            } else if (path.equals("/api/loan/apply") && method.equals("POST")) {
+                doLoanApply(ex);
+            } else if (path.equals("/api/loan/list") && method.equals("GET")) {
+                doLoanList(ex);
+            } else if (path.equals("/api/loan/repay") && method.equals("POST")) {
+                doLoanRepay(ex);
+            } else if (path.equals("/api/card/issue") && method.equals("POST")) {
+                doCardIssue(ex);
+            } else if (path.equals("/api/card") && method.equals("GET")) {
+                doCardGet(ex);
+            } else if (path.equals("/api/card/block") && method.equals("POST")) {
+                doCardBlock(ex, false);
+            } else if (path.equals("/api/card/unblock") && method.equals("POST")) {
+                doCardBlock(ex, true);
             } else if (path.equals("/api/admin/accounts") && method.equals("GET")) {
                 doAdminAccounts(ex);
             } else {
@@ -283,6 +307,139 @@ public class WebServer {
         }
         out.append("]}");
         send(ex, 200, out.toString());
+    }
+
+    private void doFdCreate(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        Map<String, String> body = readJson(ex);
+        BigDecimal principal = ValidationUtil.parseAmount(body.get("principal"));
+        int months = parseIntParam(body, "months", "tenure");
+        FixedDeposit fd = service.openFD(accountNo, principal, months);
+        send(ex, 200, "{\"ok\":true,\"fd\":" + fdJson(fd)
+                + ",\"balance\":" + Json.quote(service.getBalance(accountNo).toPlainString()) + "}");
+    }
+
+    private void doFdList(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        StringBuilder out = new StringBuilder("{\"ok\":true,\"fds\":[");
+        List<FixedDeposit> fds = service.listFDs(accountNo);
+        for (int i = 0; i < fds.size(); i++) {
+            if (i > 0) {
+                out.append(',');
+            }
+            out.append(fdJson(fds.get(i)));
+        }
+        out.append("]}");
+        send(ex, 200, out.toString());
+    }
+
+    private void doFdClose(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        int fdId = parseIntParam(readJson(ex), "fdId", "FD id");
+        BigDecimal credited = service.closeFD(accountNo, fdId);
+        send(ex, 200, "{\"ok\":true,\"credited\":" + Json.quote(credited.toPlainString())
+                + ",\"balance\":" + Json.quote(service.getBalance(accountNo).toPlainString()) + "}");
+    }
+
+    private void doLoanApply(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        Map<String, String> body = readJson(ex);
+        BigDecimal principal = ValidationUtil.parseAmount(body.get("principal"));
+        int months = parseIntParam(body, "months", "tenure");
+        Loan loan = service.applyLoan(accountNo, body.get("loanType"), principal, months);
+        send(ex, 200, "{\"ok\":true,\"loan\":" + loanJson(loan)
+                + ",\"balance\":" + Json.quote(service.getBalance(accountNo).toPlainString()) + "}");
+    }
+
+    private void doLoanList(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        StringBuilder out = new StringBuilder("{\"ok\":true,\"loans\":[");
+        List<Loan> loans = service.listLoans(accountNo);
+        for (int i = 0; i < loans.size(); i++) {
+            if (i > 0) {
+                out.append(',');
+            }
+            out.append(loanJson(loans.get(i)));
+        }
+        out.append("]}");
+        send(ex, 200, out.toString());
+    }
+
+    private void doLoanRepay(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        Map<String, String> body = readJson(ex);
+        int loanId = parseIntParam(body, "loanId", "loan id");
+        BigDecimal amount = ValidationUtil.parseAmount(body.get("amount"));
+        BigDecimal outstanding = service.repayLoan(accountNo, loanId, amount);
+        send(ex, 200, "{\"ok\":true,\"outstanding\":" + Json.quote(outstanding.toPlainString())
+                + ",\"balance\":" + Json.quote(service.getBalance(accountNo).toPlainString()) + "}");
+    }
+
+    private void doCardIssue(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        BankService.CardIssue issue = service.issueCard(accountNo);
+        send(ex, 200, "{\"ok\":true,"
+                + "\"number\":" + Json.quote(issue.getNumber()) + ","
+                + "\"grouped\":" + Json.quote(grouped(issue.getNumber())) + ","
+                + "\"expiry\":" + Json.quote(issue.getExpiry()) + ","
+                + "\"cvv\":" + Json.quote(issue.getCvv()) + "}");
+    }
+
+    private void doCardGet(HttpExchange ex) throws Exception {
+        long accountNo = requireUser(ex);
+        DebitCard card = service.getCard(accountNo);
+        if (card == null) {
+            send(ex, 200, "{\"ok\":true,\"card\":null}");
+        } else {
+            send(ex, 200, "{\"ok\":true,\"card\":" + cardJson(card) + "}");
+        }
+    }
+
+    private void doCardBlock(HttpExchange ex, boolean active) throws Exception {
+        long accountNo = requireUser(ex);
+        service.setCardActive(accountNo, active);
+        send(ex, 200, "{\"ok\":true,\"active\":" + active + "}");
+    }
+
+    private String fdJson(FixedDeposit fd) {
+        return "{\"fdId\":" + fd.getFdId()
+                + ",\"principal\":" + Json.quote(fd.getPrincipal().toPlainString())
+                + ",\"rate\":" + Json.quote(fd.getAnnualRate().toPlainString())
+                + ",\"months\":" + fd.getTenureMonths()
+                + ",\"start\":" + Json.quote(fd.getStartDate().format(DATE_FORMAT))
+                + ",\"maturity\":" + Json.quote(fd.getMaturityDate().format(DATE_FORMAT))
+                + ",\"value\":" + Json.quote(fd.getMaturityAmount().toPlainString())
+                + ",\"status\":" + Json.quote(fd.getStatus()) + "}";
+    }
+
+    private String loanJson(Loan loan) {
+        return "{\"loanId\":" + loan.getLoanId()
+                + ",\"type\":" + Json.quote(loan.getLoanType().name())
+                + ",\"principal\":" + Json.quote(loan.getPrincipal().toPlainString())
+                + ",\"rate\":" + Json.quote(loan.getAnnualRate().toPlainString())
+                + ",\"months\":" + loan.getTenureMonths()
+                + ",\"emi\":" + Json.quote(loan.getEmi().toPlainString())
+                + ",\"outstanding\":" + Json.quote(loan.getOutstanding().toPlainString())
+                + ",\"status\":" + Json.quote(loan.getStatus()) + "}";
+    }
+
+    private String cardJson(DebitCard card) {
+        return "{\"masked\":" + Json.quote(card.maskedNumber())
+                + ",\"expiry\":" + Json.quote(card.getExpiry())
+                + ",\"active\":" + card.isActive() + "}";
+    }
+
+    private String grouped(String number) {
+        return number.substring(0, 4) + " " + number.substring(4, 8) + " "
+                + number.substring(8, 12) + " " + number.substring(12);
+    }
+
+    private int parseIntParam(Map<String, String> body, String key, String label) {
+        try {
+            return Integer.parseInt(body.getOrDefault(key, "").trim());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid " + label + ".");
+        }
     }
 
     private long requireUser(HttpExchange ex) throws AuthenticationException {

@@ -9,6 +9,10 @@
 <body>
 <header>
   <div class="brand"><span class="brand-mark"></span><h1>Campus National Bank</h1></div>
+  <div id="navBar">
+    <button id="navLogin" class="ghost">Login</button>
+    <button id="navRegister" class="gold">Open account</button>
+  </div>
   <div id="userBar" class="hidden">
     <span id="userLabel" class="user-chip"></span>
     <button id="topLogout" class="secondary">Logout</button>
@@ -16,8 +20,85 @@
 </header>
 
 <main>
+  <!-- Landing -->
+  <section id="landingView">
+    <div class="card hero-landing">
+      <div>
+        <h2 class="mega">Banking that grows with campus life.</h2>
+        <p class="muted">Open an account in a minute. Lock high-rate fixed deposits,
+          take instant study loans, and spend with your Scholar debit card.</p>
+        <div class="btn-row" style="margin-top:16px">
+          <button id="ctaRegister">Open free account</button>
+          <button id="ctaLogin" class="secondary">Login</button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div><strong>7.50%</strong><span>top FD rate</span></div>
+        <div><strong>8.50%</strong><span>home loans from</span></div>
+        <div><strong>5×</strong><span>loan on balance</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Today's rates</h3>
+      <div class="rate-grid">
+        <div><strong>FD 6–11 mo</strong><span>6.50%</span></div>
+        <div><strong>FD 12–24 mo</strong><span>7.00%</span></div>
+        <div><strong>FD 25–60 mo</strong><span>7.50%</span></div>
+        <div><strong>Home loan</strong><span>8.50%</span></div>
+        <div><strong>Education loan</strong><span>9.00%</span></div>
+        <div><strong>Personal loan</strong><span>12.00%</span></div>
+      </div>
+    </div>
+    <div class="calc-grid">
+      <div class="card">
+        <h3>FD calculator</h3>
+        <label>Principal (Rs.)<input id="calcFdP" value="50000" inputmode="decimal"></label>
+        <label>Tenure
+          <select id="calcFdT">
+            <option value="6">6 months</option>
+            <option value="12" selected>12 months</option>
+            <option value="24">24 months</option>
+            <option value="36">36 months</option>
+            <option value="60">60 months</option>
+          </select>
+        </label>
+        <div class="calc-out" id="calcFdOut"></div>
+      </div>
+      <div class="card">
+        <h3>EMI calculator</h3>
+        <label>Loan type
+          <select id="calcEmiType">
+            <option value="HOME">Home (8.50%)</option>
+            <option value="EDUCATION">Education (9.00%)</option>
+            <option value="PERSONAL">Personal (12.00%)</option>
+          </select>
+        </label>
+        <label>Amount (Rs.)<input id="calcEmiP" value="100000" inputmode="decimal"></label>
+        <label>Tenure (months)<input id="calcEmiT" value="12" inputmode="numeric"></label>
+        <div class="calc-out" id="calcEmiOut"></div>
+      </div>
+    </div>
+    <div class="prod-grid">
+      <div class="card">
+        <h3>Campus FD</h3>
+        <p class="muted">Lock savings from Rs.5000 for 6–60 months and earn up to
+          7.50%. Early closure pays 4% after 3 months.</p>
+      </div>
+      <div class="card">
+        <h3>Instant loans</h3>
+        <p class="muted">Home, education and personal loans up to 5× your balance,
+          disbursed instantly with clear monthly EMIs.</p>
+      </div>
+      <div class="card">
+        <h3>Scholar debit card</h3>
+        <p class="muted">Free card issued instantly. Block or unblock anytime;
+          your CVV is shown exactly once.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Login -->
-  <section id="loginView" class="card auth">
+  <section id="loginView" class="card auth hidden">
     <div class="auth-side">
       <h2>Welcome back</h2>
       <p>Secure banking for the campus community.</p>
@@ -86,38 +167,122 @@
       </div>
       <div class="balance"><small>Available balance</small>Rs. <span id="dashBalance">0.00</span></div>
     </div>
-    <div class="card">
-      <div class="btn-row">
-        <button data-act="deposit">Deposit</button>
-        <button data-act="withdraw">Withdraw</button>
-        <button data-act="transfer">Transfer</button>
-        <button data-act="pin">Change PIN</button>
-        <button id="interestBtn">Apply Interest</button>
-        <button id="detailsBtn" class="secondary">Account Details</button>
-      </div>
-      <form id="moneyForm" class="hidden inline-form">
-        <h3 id="moneyTitle">Deposit</h3>
-        <input id="moneyTo" class="hidden" placeholder="To account number">
-        <input id="moneyAmount" placeholder="Amount (Rs.)" inputmode="decimal">
-        <button type="submit" id="moneySubmit">Deposit</button>
-      </form>
-      <form id="pinForm" class="hidden inline-form">
-        <h3>Change PIN</h3>
-        <input id="oldPin" type="password" placeholder="Old PIN">
-        <input id="newPin" type="password" placeholder="New PIN (4-6 digits)">
-        <button type="submit">Change PIN</button>
-      </form>
+    <div class="tab-bar">
+      <button data-tab="overview" class="tab active">Overview</button>
+      <button data-tab="fd" class="tab">Fixed Deposits</button>
+      <button data-tab="loan" class="tab">Loans</button>
+      <button data-tab="card" class="tab">Debit Card</button>
     </div>
-    <div class="card">
-      <div class="row-between">
-        <h3>Mini Statement</h3>
-        <button id="refreshBtn" class="secondary">Refresh</button>
+    <div id="tab-overview">
+      <div class="card">
+        <div class="btn-row">
+          <button data-act="deposit">Deposit</button>
+          <button data-act="withdraw">Withdraw</button>
+          <button data-act="transfer">Transfer</button>
+          <button data-act="pin">Change PIN</button>
+          <button id="interestBtn">Apply Interest</button>
+          <button id="detailsBtn" class="secondary">Account Details</button>
+        </div>
+        <form id="moneyForm" class="hidden inline-form">
+          <h3 id="moneyTitle">Deposit</h3>
+          <input id="moneyTo" class="hidden" placeholder="To account number">
+          <input id="moneyAmount" placeholder="Amount (Rs.)" inputmode="decimal">
+          <button type="submit" id="moneySubmit">Deposit</button>
+        </form>
+        <form id="pinForm" class="hidden inline-form">
+          <h3>Change PIN</h3>
+          <input id="oldPin" type="password" placeholder="Old PIN">
+          <input id="newPin" type="password" placeholder="New PIN (4-6 digits)">
+          <button type="submit">Change PIN</button>
+        </form>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Date</th><th>Type</th><th class="num">Amount</th><th class="num">Balance After</th><th>Description</th></tr></thead>
-          <tbody id="txnBody"><tr><td colspan="5" class="muted">No transactions yet. Make a deposit to begin.</td></tr></tbody>
-        </table>
+      <div class="card">
+        <div class="row-between">
+          <h3>Mini Statement</h3>
+          <button id="refreshBtn" class="secondary">Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Type</th><th class="num">Amount</th><th class="num">Balance After</th><th>Description</th></tr></thead>
+            <tbody id="txnBody"><tr><td colspan="5" class="muted">No transactions yet. Make a deposit to begin.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-fd" class="hidden">
+      <div class="card">
+        <h3>Open Fixed Deposit</h3>
+        <form id="fdForm" class="inline-form">
+          <input id="fdP" placeholder="Principal (min Rs.5000)" inputmode="decimal">
+          <select id="fdT">
+            <option value="6">6 months @ 6.50%</option>
+            <option value="12" selected>12 months @ 7.00%</option>
+            <option value="24">24 months @ 7.00%</option>
+            <option value="36">36 months @ 7.50%</option>
+            <option value="60">60 months @ 7.50%</option>
+          </select>
+          <button type="submit">Open FD</button>
+        </form>
+        <p class="muted small" id="fdPreview"></p>
+      </div>
+      <div class="card">
+        <h3>My Fixed Deposits</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th class="num">Principal</th><th>Rate</th><th>Tenure</th><th>Matures</th><th class="num">Value</th><th>Status</th><th></th></tr></thead>
+            <tbody id="fdBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-loan" class="hidden">
+      <div class="card">
+        <h3>Apply for Loan</h3>
+        <form id="loanForm" class="inline-form">
+          <select id="loanType">
+            <option value="HOME">Home (8.50%)</option>
+            <option value="PERSONAL">Personal (12.00%)</option>
+            <option value="EDUCATION">Education (9.00%)</option>
+          </select>
+          <input id="loanP" placeholder="Amount (up to 5× balance)" inputmode="decimal">
+          <input id="loanT" placeholder="Tenure months (6–60)" inputmode="numeric">
+          <button type="submit">Apply</button>
+        </form>
+        <p class="muted small" id="loanPreview"></p>
+      </div>
+      <div class="card">
+        <h3>My Loans</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Type</th><th class="num">Principal</th><th class="num">EMI</th><th class="num">Outstanding</th><th>Status</th><th>Repay</th></tr></thead>
+            <tbody id="loanBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-card" class="hidden">
+      <div id="cardEmpty" class="card">
+        <h3>Scholar Debit Card</h3>
+        <p class="muted">No card yet. Issue your free card instantly — block or unblock it anytime.</p>
+        <div class="btn-row" style="margin-top:12px"><button id="cardIssue">Issue my card</button></div>
+      </div>
+      <div id="cardHave" class="hidden">
+        <div class="debit-card" id="debitCard">
+          <div class="dc-top"><span>Campus National Bank</span><span id="cardState"></span></div>
+          <div class="dc-chip"></div>
+          <div class="dc-num" id="cardNum"></div>
+          <div class="dc-row"><span>Expires <strong id="cardExp"></strong></span><span id="cardHolder"></span></div>
+        </div>
+        <div id="cardReveal" class="card hidden">
+          <h3>Your new card</h3>
+          <p class="muted">Save these now — the CVV is never shown again.</p>
+          <table class="details">
+            <tr><th>Number</th><td id="revNum"></td></tr>
+            <tr><th>Expiry</th><td id="revExp"></td></tr>
+            <tr><th>CVV</th><td id="revCvv"></td></tr>
+          </table>
+        </div>
+        <div class="btn-row" style="margin-top:12px"><button id="cardToggle" class="secondary">Block</button></div>
       </div>
     </div>
   </section>

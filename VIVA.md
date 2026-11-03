@@ -108,6 +108,14 @@ Transfers are atomic database transactions with rollback on failure."
   same `BankService` + database — an account opened in the browser works
   on desktop.
 
+### FDs, loans, cards
+- **FD rates?** 6.50% under 12 months, 7.00% to 24, 7.50% beyond; min
+  Rs.5000 for 6–60 months; early closure pays 4% (nothing under 3 months).
+- **Loan approval?** Instant, up to 5× balance; HOME 8.50%, EDUCATION 9.00%,
+  PERSONAL 12.00%; standard EMI formula; repayments kept in `loan_payments`.
+- **Card security?** 16-digit Luhn-valid number, 5-year expiry; CVV shown
+  once and never stored; later views return only the masked number.
+
 ### Layered design
 `model` (data) → `dao` (SQL) → `service` (rules) → `ui`/`web` (screens).
 UI never touches SQL; service never touches screens. That's why adding the

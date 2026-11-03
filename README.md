@@ -3,8 +3,9 @@
 A 2nd-year university project with two frontends on one banking backend:
 a Swing desktop app and a browser web app (JDK HttpServer + JSON API).
 Features: login, deposits, withdrawals, transfers, mini statements,
-interest, and an admin view. Built with OOP, JDBC, Swing, and HTTP.
-Targets Java 17+.
+interest, fixed deposits, loans with EMI, debit cards, and an admin view.
+The web app adds a landing page with FD/EMI calculators. Built with OOP,
+JDBC, Swing, and HTTP. Targets Java 17+.
 
 ## Features
 
@@ -13,6 +14,9 @@ Targets Java 17+.
 - Deposit, withdraw, transfer between accounts (atomic DB transactions)
 - Mini statement (last 50 transactions), balance enquiry
 - 4% interest credit for savings accounts, change PIN
+- Fixed deposits (6.50–7.50% slabs, early closure rules), loans
+  (HOME/PERSONAL/EDUCATION with EMI, up to 5× balance), debit card
+  (issue, block/unblock, CVV shown once) — web UI only
 - Admin panel listing all accounts (`admin` / `admin123`)
 - Rules: savings keeps min balance Rs.1000; current allows Rs.10,000 overdraft
 
@@ -29,7 +33,8 @@ exceptions, `BigDecimal` for money, SHA-256 hashing, layered design
 ```
 src/Main.java                 entry point, opens the desktop login window
 src/WebMain.java              entry point, starts the web app on http://localhost:8080
-src/com/bank/model/          Customer, Account, SavingsAccount, CurrentAccount, Transaction
+src/com/bank/model/          Customer, Account, SavingsAccount, CurrentAccount, Transaction,
+                             FixedDeposit, Loan, DebitCard
 src/com/bank/exception/      BankException, InsufficientFundsException, AuthenticationException
 src/com/bank/util/           PasswordUtil (SHA-256), ValidationUtil
 src/com/bank/dao/            DatabaseConnection + DAOs (JDBC)
@@ -67,7 +72,10 @@ java -cp "out:lib/*" WebMain   # web on port 8080 (WebMain 9000 for another port
 
 API: POST /api/register /api/login /api/deposit /api/withdraw
 /api/transfer /api/change-pin /api/interest /api/admin/login,
-GET /api/account /api/balance /api/history?limit=50 /api/admin/accounts.
+/api/fd/create /api/fd/close, /api/loan/apply /api/loan/repay,
+/api/card/issue /api/card/block /api/card/unblock,
+GET /api/account /api/balance /api/history?limit=50 /api/admin/accounts,
+/api/fd/list /api/loan/list /api/card.
 Register also logs you in and returns the full account details for the receipt page.
 Logged-in calls send the login token in the X-Token header.
 

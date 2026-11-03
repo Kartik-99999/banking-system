@@ -34,3 +34,53 @@ CREATE TABLE IF NOT EXISTS transactions (
     CONSTRAINT fk_txn_account FOREIGN KEY (account_no)
         REFERENCES accounts (account_no)
 );
+
+CREATE TABLE IF NOT EXISTS fixed_deposits (
+    fd_id           INT AUTO_INCREMENT PRIMARY KEY,
+    account_no      BIGINT NOT NULL,
+    principal       DECIMAL(15, 2) NOT NULL,
+    annual_rate     DECIMAL(5, 2) NOT NULL,
+    tenure_months   INT NOT NULL,
+    start_date      DATE NOT NULL,
+    maturity_date   DATE NOT NULL,
+    maturity_amount DECIMAL(15, 2) NOT NULL,
+    status          VARCHAR(10) NOT NULL DEFAULT 'OPEN',
+    closed_at       TIMESTAMP NULL,
+    CONSTRAINT fk_fd_account FOREIGN KEY (account_no)
+        REFERENCES accounts (account_no)
+);
+
+CREATE TABLE IF NOT EXISTS loans (
+    loan_id       INT AUTO_INCREMENT PRIMARY KEY,
+    account_no    BIGINT NOT NULL,
+    loan_type     VARCHAR(15) NOT NULL,         -- HOME / PERSONAL / EDUCATION
+    principal     DECIMAL(15, 2) NOT NULL,
+    annual_rate   DECIMAL(5, 2) NOT NULL,
+    tenure_months INT NOT NULL,
+    emi           DECIMAL(15, 2) NOT NULL,
+    outstanding   DECIMAL(15, 2) NOT NULL,
+    status        VARCHAR(10) NOT NULL DEFAULT 'ACTIVE',
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_loan_account FOREIGN KEY (account_no)
+        REFERENCES accounts (account_no)
+);
+
+CREATE TABLE IF NOT EXISTS loan_payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    loan_id    INT NOT NULL,
+    amount     DECIMAL(15, 2) NOT NULL,
+    paid_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_payment_loan FOREIGN KEY (loan_id)
+        REFERENCES loans (loan_id)
+);
+
+CREATE TABLE IF NOT EXISTS debit_cards (
+    card_id     INT AUTO_INCREMENT PRIMARY KEY,
+    account_no  BIGINT NOT NULL,
+    card_number VARCHAR(16) NOT NULL UNIQUE,
+    expiry      VARCHAR(5) NOT NULL,            -- MM/YY
+    active      TINYINT(1) NOT NULL DEFAULT 1,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_card_account FOREIGN KEY (account_no)
+        REFERENCES accounts (account_no)
+);

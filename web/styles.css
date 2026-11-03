@@ -130,3 +130,51 @@ table.details th { width: 40%; }
   width: 26px; height: 26px; padding: 0; font-size: 16px; line-height: 1; flex-shrink: 0; }
 
 footer { text-align: center; color: var(--muted); font-size: 13px; padding: 10px 0 34px; }
+
+/* Landing */
+.hero-landing { display: grid; grid-template-columns: 1.4fr 1fr; gap: 26px;
+  align-items: center; border-top: 4px solid var(--gold); }
+.mega { font-size: 30px; line-height: 1.2; margin-bottom: 10px; }
+.hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+.hero-stats strong { display: block; font-size: 24px; color: var(--navy); }
+.hero-stats span { font-size: 13px; color: var(--muted); }
+@media (max-width: 700px) { .hero-landing { grid-template-columns: 1fr; } }
+.rate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.rate-grid > div { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.rate-grid strong { display: block; font-size: 13.5px; color: var(--muted); font-weight: 500; }
+.rate-grid span { font-size: 21px; font-weight: 700; color: var(--navy); }
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 700px) { .calc-grid { grid-template-columns: 1fr; } }
+.calc-out { background: #eef3fa; border-radius: 8px; padding: 12px 14px; font-size: 15px; min-height: 48px; }
+.calc-out strong { color: var(--navy); }
+.prod-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.prod-grid .card { margin-bottom: 0; }
+@media (max-width: 700px) { .prod-grid { grid-template-columns: 1fr; } .prod-grid .card { margin-bottom: 18px; } }
+
+/* Header nav + tabs */
+#navBar { display: flex; gap: 10px; }
+button.ghost { background: transparent; border-color: rgba(255, 255, 255, 0.6); color: #fff; }
+button.ghost:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+button.gold { background: var(--gold); border-color: var(--gold); color: #231f04; font-weight: 600; }
+button.gold:hover { background: #b3921f; border-color: #b3921f; }
+.tab-bar { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.tab { background: #fff; color: var(--navy); border: 1px solid var(--line); }
+.tab:hover { background: #eef3fa; border-color: var(--line); }
+.tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.badge.mut { background: #eef1f6; color: var(--muted); }
+.repay-cell { display: flex; gap: 6px; }
+.repay-cell input { width: 90px; margin-top: 0; padding: 6px 8px; font-size: 14px; }
+.repay-cell button { padding: 6px 12px; font-size: 14px; }
+
+/* Debit card */
+.debit-card { background: linear-gradient(135deg, #16386a, #0b1f3e); color: #fff;
+  border-radius: 14px; padding: 22px; max-width: 420px;
+  box-shadow: 0 6px 18px rgba(10, 25, 60, 0.35); margin-bottom: 18px; }
+.debit-card.blocked { filter: grayscale(1); opacity: 0.8; }
+.dc-top { display: flex; justify-content: space-between; font-size: 14px; color: #d7e0f0; }
+.dc-chip { width: 46px; height: 34px; border-radius: 6px; margin: 18px 0 14px;
+  background: linear-gradient(135deg, #e3c766, #a8861c); }
+.dc-num { font-size: 20px; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+.dc-row { display: flex; justify-content: space-between; margin-top: 16px; font-size: 14px; color: #d7e0f0; }
+#cardState { font-weight: 700; color: #7ee2a8; }
+.debit-card.blocked #cardState { color: #ff9d9d; }
