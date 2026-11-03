@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banking System</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <h1>Banking System</h1>
+  <div id="userBar" class="hidden">
+    <span id="userLabel"></span>
+    <button id="topLogout" class="secondary">Logout</button>
+  </div>
+</header>
+
+<main>
+  <!-- Login -->
+  <section id="loginView" class="card narrow">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label>Account number<input id="loginAc" placeholder="e.g. 100001" autocomplete="username"></label>
+      <label>PIN<input id="loginPin" type="password" placeholder="Your PIN" autocomplete="current-password"></label>
+      <button type="submit">Login</button>
+    </form>
+    <p class="links"><a href="#" id="goRegister">Open a new account</a> · <a href="#" id="goAdmin">Admin</a></p>
+  </section>
+
+  <!-- Register -->
+  <section id="registerView" class="card narrow hidden">
+    <h2>Open Account</h2>
+    <form id="registerForm">
+      <label>Full name<input id="regName" placeholder="Your name"></label>
+      <label>Email<input id="regEmail" placeholder="you@example.com"></label>
+      <label>Phone (10 digits)<input id="regPhone" placeholder="9876543210"></label>
+      <label>Account type
+        <select id="regType"><option>SAVINGS</option><option>CURRENT</option></select>
+      </label>
+      <label>PIN (4-6 digits)<input id="regPin" type="password" placeholder="Choose a PIN"></label>
+      <label>Initial deposit (Rs.)<input id="regDeposit" value="1000" inputmode="decimal"></label>
+      <button type="submit">Open Account</button>
+    </form>
+    <p class="links"><a href="#" id="backToLogin">Back to login</a></p>
+  </section>
+
+  <!-- Admin login -->
+  <section id="adminLoginView" class="card narrow hidden">
+    <h2>Admin</h2>
+    <form id="adminForm">
+      <label>Username<input id="adminUser" placeholder="admin"></label>
+      <label>Password<input id="adminPass" type="password" placeholder="Password"></label>
+      <button type="submit">Login</button>
+    </form>
+    <p class="links"><a href="#" id="backToLogin2">Back to login</a></p>
+  </section>
+
+  <!-- Dashboard -->
+  <section id="dashView" class="hidden">
+    <div class="card hero">
+      <div>
+        <div class="muted">Welcome, <strong id="dashName"></strong></div>
+        <div class="muted small">A/c <span id="dashAc"></span> · <span id="dashType"></span></div>
+      </div>
+      <div class="balance">Rs. <span id="dashBalance">0.00</span></div>
+    </div>
+    <div class="card">
+      <div class="btn-row">
+        <button data-act="deposit">Deposit</button>
+        <button data-act="withdraw">Withdraw</button>
+        <button data-act="transfer">Transfer</button>
+        <button data-act="pin">Change PIN</button>
+        <button id="interestBtn">Apply Interest</button>
+        <button id="detailsBtn" class="secondary">Account Details</button>
+      </div>
+      <form id="moneyForm" class="hidden inline-form">
+        <h3 id="moneyTitle">Deposit</h3>
+        <input id="moneyTo" class="hidden" placeholder="To account number">
+        <input id="moneyAmount" placeholder="Amount (Rs.)" inputmode="decimal">
+        <button type="submit">Submit</button>
+      </form>
+      <form id="pinForm" class="hidden inline-form">
+        <h3>Change PIN</h3>
+        <input id="oldPin" type="password" placeholder="Old PIN">
+        <input id="newPin" type="password" placeholder="New PIN (4-6 digits)">
+        <button type="submit">Change</button>
+      </form>
+    </div>
+    <div class="card">
+      <div class="row-between">
+        <h3>Mini Statement</h3>
+        <button id="refreshBtn" class="secondary">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Description</th></tr></thead>
+          <tbody id="txnBody"><tr><td colspan="5" class="muted">No transactions yet.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Account details receipt -->
+  <section id="detailsView" class="card narrow hidden">
+    <div class="receipt-head">
+      <h2 id="detBank">Campus National Bank</h2>
+      <div class="muted small" id="detBranch">Main Branch, Gurugram</div>
+    </div>
+    <div class="ac-number" id="detAcNo"></div>
+    <table class="details">
+      <tr><th>Customer ID</th><td id="detCustId"></td></tr>
+      <tr><th>Account holder</th><td id="detName"></td></tr>
+      <tr><th>Mobile</th><td id="detPhone"></td></tr>
+      <tr><th>Email</th><td id="detEmail"></td></tr>
+      <tr><th>Account type</th><td id="detType"></td></tr>
+      <tr><th>Balance</th><td id="detBalance"></td></tr>
+      <tr><th>Opened on</th><td id="detOpened"></td></tr>
+    </table>
+    <div class="btn-row" style="margin-top:14px">
+      <button id="detailsBack">Go to Dashboard</button>
+      <button id="detailsPrint" class="secondary">Print</button>
+    </div>
+  </section>
+
+  <!-- Admin panel -->
+  <section id="adminView" class="hidden">
+    <div class="card">
+      <div class="row-between">
+        <h2>All Accounts</h2>
+        <button id="adminLogout" class="secondary">Logout</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Account No</th><th>Holder</th><th>Type</th><th>Balance</th></tr></thead>
+          <tbody id="adminBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="hidden"><span id="toastMsg"></span><button id="toastClose" title="Close">×</button></div>
+<script src="/app.js"></script>
+</body>
+</html>
