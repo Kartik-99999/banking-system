@@ -122,7 +122,9 @@ document.querySelectorAll("[data-act]").forEach((btn) => {
     $("moneyTo").classList.toggle("hidden", act !== "transfer");
     if (act !== "pin") {
       state.mode = act;
-      $("moneyTitle").textContent = act[0].toUpperCase() + act.slice(1);
+      const label = act[0].toUpperCase() + act.slice(1);
+      $("moneyTitle").textContent = label;
+      $("moneySubmit").textContent = label;
     }
   });
 });
@@ -170,15 +172,24 @@ async function refreshAll() {
     const body = $("txnBody");
     body.innerHTML = "";
     if (h.transactions.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" class="muted">No transactions yet.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" class="muted">No transactions yet. Make a deposit to begin.</td></tr>';
       return;
     }
     h.transactions.forEach((t) => {
+      const credit = t.type === "DEPOSIT" || t.type === "TRANSFER_IN" || t.type === "INTEREST";
       const row = body.insertRow();
       row.insertCell().textContent = t.date;
-      row.insertCell().textContent = t.type;
-      row.insertCell().textContent = t.amount;
-      row.insertCell().textContent = t.balanceAfter;
+      const typeCell = row.insertCell();
+      const badge = document.createElement("span");
+      badge.className = "badge " + (credit ? "in" : "out");
+      badge.textContent = t.type;
+      typeCell.appendChild(badge);
+      const amt = row.insertCell();
+      amt.textContent = (credit ? "+" : "-") + t.amount;
+      amt.className = "num " + (credit ? "in" : "out");
+      const bal = row.insertCell();
+      bal.textContent = t.balanceAfter;
+      bal.className = "num";
       row.insertCell().textContent = t.description || "";
     });
   } catch (err) { toast(err.message, false); }
@@ -194,7 +205,9 @@ async function loadAdmin() {
       row.insertCell().textContent = a.accountNo;
       row.insertCell().textContent = a.holder;
       row.insertCell().textContent = a.type;
-      row.insertCell().textContent = a.balance;
+      const bal = row.insertCell();
+      bal.textContent = a.balance;
+      bal.className = "num";
     });
   } catch (err) { toast(err.message, false); }
 }

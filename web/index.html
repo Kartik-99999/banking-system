@@ -3,66 +3,88 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Banking System</title>
+<title>Campus National Bank</title>
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <header>
-  <h1>Banking System</h1>
+  <div class="brand"><span class="brand-mark"></span><h1>Campus National Bank</h1></div>
   <div id="userBar" class="hidden">
-    <span id="userLabel"></span>
+    <span id="userLabel" class="user-chip"></span>
     <button id="topLogout" class="secondary">Logout</button>
   </div>
 </header>
 
 <main>
   <!-- Login -->
-  <section id="loginView" class="card narrow">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <label>Account number<input id="loginAc" placeholder="e.g. 100001" autocomplete="username"></label>
-      <label>PIN<input id="loginPin" type="password" placeholder="Your PIN" autocomplete="current-password"></label>
-      <button type="submit">Login</button>
-    </form>
-    <p class="links"><a href="#" id="goRegister">Open a new account</a> · <a href="#" id="goAdmin">Admin</a></p>
+  <section id="loginView" class="card auth">
+    <div class="auth-side">
+      <h2>Welcome back</h2>
+      <p>Secure banking for the campus community.</p>
+      <ul><li>Instant transfers</li><li>4% savings interest</li><li>Full statements</li></ul>
+    </div>
+    <div class="auth-form">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <label>Account number<input id="loginAc" placeholder="e.g. 100001" autocomplete="username"></label>
+        <label>PIN<input id="loginPin" type="password" placeholder="Your PIN" autocomplete="current-password"></label>
+        <button type="submit">Login</button>
+      </form>
+      <p class="links"><a href="#" id="goRegister">Open a new account</a> · <a href="#" id="goAdmin">Admin</a></p>
+    </div>
   </section>
 
   <!-- Register -->
-  <section id="registerView" class="card narrow hidden">
-    <h2>Open Account</h2>
-    <form id="registerForm">
-      <label>Full name<input id="regName" placeholder="Your name"></label>
-      <label>Email<input id="regEmail" placeholder="you@example.com"></label>
-      <label>Phone (10 digits)<input id="regPhone" placeholder="9876543210"></label>
-      <label>Account type
-        <select id="regType"><option>SAVINGS</option><option>CURRENT</option></select>
-      </label>
-      <label>PIN (4-6 digits)<input id="regPin" type="password" placeholder="Choose a PIN"></label>
-      <label>Initial deposit (Rs.)<input id="regDeposit" value="1000" inputmode="decimal"></label>
-      <button type="submit">Open Account</button>
-    </form>
-    <p class="links"><a href="#" id="backToLogin">Back to login</a></p>
+  <section id="registerView" class="card auth hidden">
+    <div class="auth-side">
+      <h2>Join the bank</h2>
+      <p>Open your account in under a minute.</p>
+      <ul><li>No paperwork</li><li>Number issued instantly</li><li>Savings from Rs.1000</li></ul>
+    </div>
+    <div class="auth-form">
+      <h2>Open Account</h2>
+      <form id="registerForm">
+        <label>Full name<input id="regName" placeholder="Your name"></label>
+        <label>Email<input id="regEmail" placeholder="you@example.com"></label>
+        <label>Phone (10 digits)<input id="regPhone" placeholder="9876543210"></label>
+        <label>Account type
+          <select id="regType"><option>SAVINGS</option><option>CURRENT</option></select>
+        </label>
+        <label>PIN (4-6 digits)<input id="regPin" type="password" placeholder="Choose a PIN"></label>
+        <label>Initial deposit (Rs.)<input id="regDeposit" value="1000" inputmode="decimal"></label>
+        <button type="submit">Open Account</button>
+      </form>
+      <p class="links"><a href="#" id="backToLogin">Back to login</a></p>
+    </div>
   </section>
 
   <!-- Admin login -->
-  <section id="adminLoginView" class="card narrow hidden">
-    <h2>Admin</h2>
-    <form id="adminForm">
-      <label>Username<input id="adminUser" placeholder="admin"></label>
-      <label>Password<input id="adminPass" type="password" placeholder="Password"></label>
-      <button type="submit">Login</button>
-    </form>
-    <p class="links"><a href="#" id="backToLogin2">Back to login</a></p>
+  <section id="adminLoginView" class="card auth hidden">
+    <div class="auth-side">
+      <h2>Staff access</h2>
+      <p>Restricted area for bank staff.</p>
+      <ul><li>All accounts overview</li><li>Live balances</li></ul>
+    </div>
+    <div class="auth-form">
+      <h2>Admin</h2>
+      <form id="adminForm">
+        <label>Username<input id="adminUser" placeholder="admin"></label>
+        <label>Password<input id="adminPass" type="password" placeholder="Password"></label>
+        <button type="submit">Login</button>
+      </form>
+      <p class="links"><a href="#" id="backToLogin2">Back to login</a></p>
+    </div>
   </section>
 
   <!-- Dashboard -->
   <section id="dashView" class="hidden">
     <div class="card hero">
       <div>
-        <div class="muted">Welcome, <strong id="dashName"></strong></div>
-        <div class="muted small">A/c <span id="dashAc"></span> · <span id="dashType"></span></div>
+        <div class="muted">Welcome back,</div>
+        <div class="hero-name" id="dashName"></div>
+        <div class="muted small"><span id="dashType"></span> account no. <span id="dashAc"></span></div>
       </div>
-      <div class="balance">Rs. <span id="dashBalance">0.00</span></div>
+      <div class="balance"><small>Available balance</small>Rs. <span id="dashBalance">0.00</span></div>
     </div>
     <div class="card">
       <div class="btn-row">
@@ -77,13 +99,13 @@
         <h3 id="moneyTitle">Deposit</h3>
         <input id="moneyTo" class="hidden" placeholder="To account number">
         <input id="moneyAmount" placeholder="Amount (Rs.)" inputmode="decimal">
-        <button type="submit">Submit</button>
+        <button type="submit" id="moneySubmit">Deposit</button>
       </form>
       <form id="pinForm" class="hidden inline-form">
         <h3>Change PIN</h3>
         <input id="oldPin" type="password" placeholder="Old PIN">
         <input id="newPin" type="password" placeholder="New PIN (4-6 digits)">
-        <button type="submit">Change</button>
+        <button type="submit">Change PIN</button>
       </form>
     </div>
     <div class="card">
@@ -93,8 +115,8 @@
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Description</th></tr></thead>
-          <tbody id="txnBody"><tr><td colspan="5" class="muted">No transactions yet.</td></tr></tbody>
+          <thead><tr><th>Date</th><th>Type</th><th class="num">Amount</th><th class="num">Balance After</th><th>Description</th></tr></thead>
+          <tbody id="txnBody"><tr><td colspan="5" class="muted">No transactions yet. Make a deposit to begin.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -131,13 +153,15 @@
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Account No</th><th>Holder</th><th>Type</th><th>Balance</th></tr></thead>
+          <thead><tr><th>Account No</th><th>Holder</th><th>Type</th><th class="num">Balance</th></tr></thead>
           <tbody id="adminBody"></tbody>
         </table>
       </div>
     </div>
   </section>
 </main>
+
+<footer>Campus National Bank · Main Branch, Gurugram · College demo project</footer>
 
 <div id="toast" class="hidden"><span id="toastMsg"></span><button id="toastClose" title="Close">×</button></div>
 <script src="/config.js"></script>
